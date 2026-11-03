@@ -5,8 +5,6 @@
 Задача: предсказать, произойдёт ли дефолт по кредитной карте в следующем месяце. Я использую датасет **Default of Credit Card Clients** (30 000 клиентов, 23 признака).
 
 - Датасет: https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients
-- Ссылка из задания: https://www.kaggle.com/datasets/uciml/default-of-credit-card-clients-dataset
-- Автор датасета: I-Cheng Yeh; DOI: https://doi.org/10.24432/C55S3H
 
 ## Что есть в проекте
 
@@ -20,42 +18,11 @@
 8. Тесты pytest и GitHub Actions с Pandera, flake8 и black.
 9. FastAPI с `/predict`, Docker и расчёт PSI по результатам API.
 
-## Структура
-
-```text
-credit-scoring-project/
-├── data/raw/                  исходные данные
-├── data/processed/            подготовленные данные
-├── models/                    сохранённая модель
-├── reports/                   метрики, графики, результаты экспериментов
-├── notebooks/
-│   └── 01_credit_scoring.ipynb
-├── src/
-│   ├── data/                  загрузка, очистка и проверка
-│   ├── features/              новые признаки
-│   ├── models/                обучение и оценка
-│   ├── api/                   FastAPI
-│   └── monitoring/            расчёт PSI
-├── tests/
-├── scripts/
-├── .github/workflows/ci.yml
-├── dvc.yaml
-├── Dockerfile
-├── requirements.txt
-└── README.md
-```
-
 ## Как запустить
 
-Проект рассчитан на **Python 3.11**. Команды выполняю из корня репозитория.
-
-```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-Для Windows вместо `source .venv/bin/activate` использую `.venv\Scripts\activate`.
 
 ### 1. Загрузка и проверка данных
 
@@ -63,8 +30,6 @@ pip install -r requirements.txt
 python -m src.data.download
 python -m src.data.validation
 ```
-
-Скрипт сохраняет `data/raw/credit_default.csv`. Датасет не добавлен в архив проекта: он скачивается отдельно при первом запуске. Для первого скачивания нужен интернет.
 
 ### 2. DVC и обучение
 
@@ -103,7 +68,7 @@ jupyter notebook notebooks/01_credit_scoring.ipynb
 ### 4. MLflow
 
 ```bash
-mlflow ui --backend-store-uri ./mlruns --port 5000
+mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000
 ```
 
 Открываю http://localhost:5000. В эксперименте `credit_default_scoring` вижу пять проверочных запусков и итоговый запуск `final_grid_search`. Промежуточные модели сравниваю по **ROC-AUC на validation**, после выбора модели считаю метрики на test.
@@ -161,10 +126,3 @@ python -m src.monitoring.drift --sample-size 100
 - `gradient_boosting` — градиентный бустинг.
 
 Сначала сравниваю их на validation. Затем через `GridSearchCV` выбираю параметры лучшего алгоритма и один раз оцениваю итоговую модель на test. Использую ROC-AUC, Precision, Recall и F1. Порог для класса — 0.5.
-
-## Замечания
-
-- Датасет учебный, данные относятся к 2005 году.
-- Кредитный скоринг в реальном банке требует дополнительной проверки качества, калибровки вероятностей, справедливости модели и выполнения нормативных требований.
-- Репозиторий в GitHub нужно опубликовать самостоятельно. Готовые файлы и workflow уже подготовлены, но публикация в GitHub не выполняется автоматически.
-- Без запуска со скачанными данными в проекте нет реальных итоговых значений метрик или выполненных MLflow-экспериментов; они появляются после `dvc repro`.
