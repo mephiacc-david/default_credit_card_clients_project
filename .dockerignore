@@ -1,0 +1,9 @@
+.venv
+.git
+.dvc
+mlruns
+notebooks
+reports
+data
+.pytest_cache
+__pycache__
