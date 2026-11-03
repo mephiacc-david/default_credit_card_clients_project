@@ -7,11 +7,29 @@ import pandas as pd
 TARGET = "default.payment.next.month"
 RAW_PATH = Path("data/raw/credit_default.csv")
 UCI_COLUMN_NAMES = [
-    "LIMIT_BAL", "SEX", "EDUCATION", "MARRIAGE", "AGE",
-    "PAY_0", "PAY_2", "PAY_3", "PAY_4", "PAY_5", "PAY_6",
-    "BILL_AMT1", "BILL_AMT2", "BILL_AMT3", "BILL_AMT4", "BILL_AMT5",
-    "BILL_AMT6", "PAY_AMT1", "PAY_AMT2", "PAY_AMT3", "PAY_AMT4",
-    "PAY_AMT5", "PAY_AMT6",
+    "LIMIT_BAL",
+    "SEX",
+    "EDUCATION",
+    "MARRIAGE",
+    "AGE",
+    "PAY_0",
+    "PAY_2",
+    "PAY_3",
+    "PAY_4",
+    "PAY_5",
+    "PAY_6",
+    "BILL_AMT1",
+    "BILL_AMT2",
+    "BILL_AMT3",
+    "BILL_AMT4",
+    "BILL_AMT5",
+    "BILL_AMT6",
+    "PAY_AMT1",
+    "PAY_AMT2",
+    "PAY_AMT3",
+    "PAY_AMT4",
+    "PAY_AMT5",
+    "PAY_AMT6",
 ]
 MIRROR_URL = (
     "https://huggingface.co/datasets/scikit-learn/credit-card-clients/"
@@ -32,8 +50,7 @@ def download_dataset(output_path=RAW_PATH):
         dataset = fetch_ucirepo(id=350)
         data = dataset.data.features.copy()
         column_mapping = {
-            f"X{index}": name
-            for index, name in enumerate(UCI_COLUMN_NAMES, start=1)
+            f"X{index}": name for index, name in enumerate(UCI_COLUMN_NAMES, start=1)
         }
         data = data.rename(columns=column_mapping)
         data[TARGET] = dataset.data.targets.iloc[:, 0].to_numpy()

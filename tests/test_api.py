@@ -13,9 +13,9 @@ def test_predict_endpoint(sample_data):
     app.dependency_overrides[get_model] = lambda: DummyModel()
     try:
         client = TestClient(app)
-        payload = sample_data.drop(
-            columns=["default.payment.next.month"]
-        ).iloc[0].to_dict()
+        payload = (
+            sample_data.drop(columns=["default.payment.next.month"]).iloc[0].to_dict()
+        )
         response = client.post("/predict", json=payload)
         assert response.status_code == 200
         assert response.json()["default_prediction"] == 1
@@ -46,9 +46,9 @@ def test_wrong_age_returns_422(sample_data):
     app.dependency_overrides[get_model] = lambda: DummyModel()
     try:
         client = TestClient(app)
-        payload = sample_data.drop(
-            columns=["default.payment.next.month"]
-        ).iloc[0].to_dict()
+        payload = (
+            sample_data.drop(columns=["default.payment.next.month"]).iloc[0].to_dict()
+        )
         payload["AGE"] = 150
         response = client.post("/predict", json=payload)
         assert response.status_code == 422

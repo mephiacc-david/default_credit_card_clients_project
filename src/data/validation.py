@@ -23,15 +23,11 @@ def create_schema():
         TARGET: pa.Column(int, pa.Check.isin([0, 1]), nullable=False),
     }
     for column in PAY_COLUMNS:
-        columns[column] = pa.Column(
-            int, pa.Check.in_range(-2, 9), nullable=False
-        )
+        columns[column] = pa.Column(int, pa.Check.in_range(-2, 9), nullable=False)
     for column in BILL_COLUMNS:
         columns[column] = pa.Column(float, nullable=False, coerce=True)
     for column in PAY_AMOUNT_COLUMNS:
-        columns[column] = pa.Column(
-            float, pa.Check.ge(0), nullable=False, coerce=True
-        )
+        columns[column] = pa.Column(float, pa.Check.ge(0), nullable=False, coerce=True)
     return pa.DataFrameSchema(columns, strict=False)
 
 

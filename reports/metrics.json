@@ -1,0 +1,13 @@
+{
+  "roc_auc": 0.7802328017208641,
+  "precision": 0.6620498614958449,
+  "recall": 0.3602110022607385,
+  "f1": 0.4665690580771108,
+  "best_experiment": "gradient_boosting",
+  "best_algorithm": "gradient_boosting",
+  "cv_roc_auc": 0.7821830587498292,
+  "best_params": {
+    "classifier__max_leaf_nodes": 15
+  },
+  "test_rows": 6000
+}

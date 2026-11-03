@@ -71,7 +71,7 @@ def run_training(
 
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     MODEL_PATH.parent.mkdir(parents=True, exist_ok=True)
-    mlflow.set_tracking_uri(Path("mlruns").resolve().as_uri())
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
     mlflow.set_experiment("credit_default_scoring")
 
     experiment_rows = []
@@ -88,7 +88,11 @@ def run_training(
             roc_path = REPORTS_DIR / "validation_roc.png"
             plot_roc(y_valid, probabilities, roc_path)
             mlflow.log_artifact(str(roc_path))
-            mlflow.sklearn.log_model(pipeline, name="model")
+            mlflow.sklearn.log_model(
+                pipeline,
+                name="model",
+                serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
+            )
             experiment_rows.append(
                 {"experiment": experiment_name, "algorithm": model_name, **metrics}
             )
@@ -127,7 +131,11 @@ def run_training(
         plot_roc(y_test, probabilities, REPORTS_DIR / "roc_curve.png")
         mlflow.log_artifact(str(REPORTS_DIR / "roc_curve.png"))
         mlflow.log_artifact(str(REPORTS_DIR / "experiments.csv"))
-        mlflow.sklearn.log_model(model, name="model")
+        mlflow.sklearn.log_model(
+            model,
+            name="model",
+            serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
+        )
 
     joblib.dump(model, MODEL_PATH)
     reference = model.predict_proba(x_train)[:, 1]

@@ -1,0 +1,78 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python -m src.data.make_dataset
+    deps:
+    - path: data/raw/credit_default.csv
+      hash: md5
+      md5: 0a76a48f9f567de332640c3cc751cb20
+      size: 2698311
+    - path: src/data/download.py
+      hash: md5
+      md5: e128b76c8754dfbfca256c5c0af75c98
+      size: 1943
+    - path: src/data/make_dataset.py
+      hash: md5
+      md5: 9b21e91272c31fc3cc400cb8905c0b0b
+      size: 1173
+    - path: src/data/validation.py
+      hash: md5
+      md5: 6904cafd3ff6a14482ed3fa5fdb7c20b
+      size: 1734
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: c6eb8f3f5d531c4db839815137ba78f5
+      size: 540070
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 96baf3a85f0b11da6d44c51fb1fa5cd2
+      size: 2158455
+  train:
+    cmd: python -m src.models.train
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: c6eb8f3f5d531c4db839815137ba78f5
+      size: 540070
+    - path: data/processed/train.csv
+      hash: md5
+      md5: 96baf3a85f0b11da6d44c51fb1fa5cd2
+      size: 2158455
+    - path: src/features/build_features.py
+      hash: md5
+      md5: 5bcf78deef2a92ca4a6499a6538d3602
+      size: 1186
+    - path: src/models/metrics.py
+      hash: md5
+      md5: b5f249072e4e69b43749e3bf1d54e79a
+      size: 584
+    - path: src/models/pipeline.py
+      hash: md5
+      md5: 1ed0a2c3557d20c546758642dec4eabe
+      size: 1824
+    - path: src/models/train.py
+      hash: md5
+      md5: e2fbd47904715a70f86bd52a04cd20ea
+      size: 5823
+    outs:
+    - path: models/credit_default_model.joblib
+      hash: md5
+      md5: a932a53e481cb66245edfbdac2372b52
+      size: 207514
+    - path: reports/experiments.csv
+      hash: md5
+      md5: 51f1237ee11f66cb4453f82e399f7eaa
+      size: 567
+    - path: reports/metrics.json
+      hash: md5
+      md5: ed1432dec4bedd10b84f42f0d2def964
+      size: 331
+    - path: reports/reference_probabilities.csv
+      hash: md5
+      md5: 9bccb221a1a1afc263db0167a4688b58
+      size: 471889
+    - path: reports/roc_curve.png
+      hash: md5
+      md5: 0646e61fa51ac5f488f6893c0e903594
+      size: 37628

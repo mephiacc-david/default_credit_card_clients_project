@@ -103,7 +103,7 @@ jupyter notebook notebooks/01_credit_scoring.ipynb
 ### 4. MLflow
 
 ```bash
-mlflow ui --backend-store-uri ./mlruns --port 5000
+mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000
 ```
 
 Открываю http://localhost:5000. В эксперименте `credit_default_scoring` вижу пять проверочных запусков и итоговый запуск `final_grid_search`. Промежуточные модели сравниваю по **ROC-AUC на validation**, после выбора модели считаю метрики на test.
