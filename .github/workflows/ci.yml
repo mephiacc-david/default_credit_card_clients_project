@@ -15,10 +15,12 @@ jobs:
           cache: pip
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Download data
+        run: python -m src.data.download
       - name: Validate data with Pandera
-        run: |
-          python -m src.data.download
-          python -m src.data.validation
+        run: python -m src.data.validation
+      - name: Validate data with Great Expectations
+        run: python -m src.data.validation_gx
       - name: Unit tests
         run: pytest -q
       - name: Check formatting

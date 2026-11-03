@@ -9,13 +9,13 @@
 ## Что есть в проекте
 
 1. Загрузка данных из UCI (если UCI недоступен, используется копия на Hugging Face).
-2. Проверка Pandera: типы, пропуски, возраст, кредитный лимит, значения целевой переменной.
+2. Проверки Pandera и Great Expectations: схема, пропуски, возраст, кредитный лимит, значения целевой переменной.
 3. Очистка категорий, новые признаки по платежам, разделение train/test.
 4. Sklearn Pipeline с заполнением пропусков, StandardScaler, OneHotEncoder и классификатором.
 5. Пять экспериментов с Logistic Regression, Random Forest и Gradient Boosting. Подбор параметров выбранного алгоритма через GridSearchCV.
 6. Логирование моделей, параметров, метрик и ROC-кривых в MLflow.
 7. DVC: этапы `prepare` и `train`, результаты в `dvc.yaml`.
-8. Тесты pytest и GitHub Actions с Pandera, flake8 и black.
+8. Тесты pytest и GitHub Actions с Pandera, Great Expectations, flake8 и black.
 9. FastAPI с `/predict`, Docker и расчёт PSI по результатам API.
 
 ## Как запустить
@@ -29,6 +29,7 @@ pip install -r requirements.txt
 ```bash
 python -m src.data.download
 python -m src.data.validation
+python -m src.data.validation_gx
 ```
 
 ### 2. DVC и обучение
@@ -81,7 +82,7 @@ black --check src tests
 flake8 src tests
 ```
 
-В `.github/workflows/ci.yml` указаны автоматическая проверка Pandera, pytest, black и flake8 на каждый push и pull request. После публикации проекта в GitHub этот workflow заработает автоматически.
+В `.github/workflows/ci.yml` указаны автоматические проверки Pandera, Great Expectations, pytest, black и flake8 на каждый push и pull request.
 
 ### 6. FastAPI и Docker
 

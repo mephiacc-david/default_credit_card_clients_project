@@ -1,6 +1,8 @@
 -r requirements-api.txt
 matplotlib>=3.8,<4
 pandera[pandas]>=0.24,<0.29
+great_expectations>=1.24,<1.25
+marshmallow>=3.18,<4
 mlflow>=3.2,<4
 ucimlrepo>=0.0.7,<1
 dvc>=3.5,<4
