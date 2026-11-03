@@ -1,0 +1,29 @@
+stages:
+  prepare:
+    cmd: python -m src.data.make_dataset
+    deps:
+      - src/data/download.py
+      - src/data/validation.py
+      - src/data/make_dataset.py
+      - data/raw/credit_default.csv
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+
+  train:
+    cmd: python -m src.models.train
+    deps:
+      - src/models/train.py
+      - src/models/pipeline.py
+      - src/models/metrics.py
+      - src/features/build_features.py
+      - data/processed/train.csv
+      - data/processed/test.csv
+    outs:
+      - models/credit_default_model.joblib
+      - reports/roc_curve.png
+      - reports/experiments.csv
+      - reports/reference_probabilities.csv
+    metrics:
+      - reports/metrics.json:
+          cache: false
