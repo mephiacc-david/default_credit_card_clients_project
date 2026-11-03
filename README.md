@@ -18,11 +18,31 @@
 8. Тесты pytest и GitHub Actions с Pandera, Great Expectations, flake8 и black.
 9. FastAPI с `/predict`, Docker и расчёт PSI по результатам API.
 
+## Структура проекта
+
+```text
+src/data/         загрузка, очистка и валидация данных
+src/features/     создание признаков
+src/models/       pipeline, обучение и метрики
+src/api/          REST API для предсказаний
+src/monitoring/   расчёт PSI
+tests/            unit-тесты и проверки аномалий
+notebooks/        исследование и демонстрация результатов
+data/             исходные и подготовленные данные под DVC
+models/           обученная модель под DVC
+reports/          метрики, сравнение экспериментов и графики
+scripts/          запуск данных, Docker и проверка API
+dvc.yaml          стадии prepare и train
+.github/workflows/ci.yml  проверки при push и pull request
+```
+
 ## Как запустить
 
+```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+```
 
 ### 1. Загрузка и проверка данных
 
@@ -69,10 +89,10 @@ jupyter notebook notebooks/01_credit_scoring.ipynb
 ### 4. MLflow
 
 ```bash
-mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000
+mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5001
 ```
 
-Открываю http://localhost:5000. В эксперименте `credit_default_scoring` вижу пять проверочных запусков и итоговый запуск `final_grid_search`. Промежуточные модели сравниваю по **ROC-AUC на validation**, после выбора модели считаю метрики на test.
+Открываю http://localhost:5001. В эксперименте `credit_default_scoring` вижу пять запусков моделей и итоговый запуск `final_grid_search`. Промежуточные модели сравниваю по **ROC-AUC на validation**, после выбора модели считаю метрики на test.
 
 ### 5. Тесты и CI
 
@@ -127,3 +147,17 @@ python -m src.monitoring.drift --sample-size 100
 - `gradient_boosting` — градиентный бустинг.
 
 Сначала сравниваю их на validation. Затем через `GridSearchCV` выбираю параметры лучшего алгоритма и один раз оцениваю итоговую модель на test. Использую ROC-AUC, Precision, Recall и F1. Порог для класса — 0.5.
+
+## Результаты экспериментов
+
+В MLflow UI сравнил пять успешных запусков моделей. Значения на validation также сохранены в `reports/experiments.csv`:
+
+| Модель | ROC-AUC | Precision | Recall | F1 |
+| --- | ---: | ---: | ---: | ---: |
+| `gradient_boosting` | **0.7827** | 0.6966 | 0.3444 | 0.4609 |
+| `random_forest` | 0.7812 | 0.6836 | 0.3549 | 0.4673 |
+| `logistic_balanced` | 0.7521 | 0.4776 | **0.5712** | **0.5202** |
+| `logistic_C_1` | 0.7508 | 0.6585 | 0.2849 | 0.3977 |
+| `logistic_C_0.1` | 0.7504 | 0.6567 | 0.2826 | 0.3952 |
+
+По выбранному критерию ROC-AUC лидирует градиентный бустинг; случайный лес близок к нему. Взвешенная логистическая регрессия лучше обнаруживает дефолты при пороге 0.5 (Recall 0.5712), но даёт больше ложных тревог (Precision 0.4776). После `GridSearchCV` итоговый бустинг получил на отложенном test: ROC-AUC **0.7802**, Precision **0.6620**, Recall **0.3602**, F1 **0.4666** (`reports/metrics.json`).
